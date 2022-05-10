@@ -1,7 +1,12 @@
 import logo from './logo.svg';
 import './App.css';
+import React, { useEffect, useReducer } from 'react';
+import { API } from 'aws-amplify';
+import { List } from 'antd';
+import 'antd/dist/antd.css';
+import { listNotes } from './graphql/queries';
 
-function App() {
+const App = () => {
   return (
     <div className="App">
       <header className="App-header">
@@ -20,6 +25,6 @@ function App() {
       </header>
     </div>
   );
-}
+};
 
 export default App;
