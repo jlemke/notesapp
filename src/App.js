@@ -45,7 +45,7 @@ const App = () => {
 
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const fetchNotes = () => {
+  const fetchNotes = async () => {
     try {
       const notesData = await API.graphql({
         query: listNotes
@@ -64,6 +64,18 @@ const App = () => {
     }
   };
 
+  const renderItem = (item) => {
+    return (
+      <List.Item style={styles.item}>
+        <List.Item.Meta
+          title={item.name}
+          description={item.description}
+        />
+      </List.Item>
+    )
+  };
+
+
   useEffect(
     () => {
       fetchNotes();
@@ -79,6 +91,25 @@ const App = () => {
       />
     </div>
   );
+};
+
+
+const styles = {
+  container: {
+    padding: 20
+  },
+
+  input: {
+    marginBottom: 10
+  },
+
+  item: {
+    textAlign: 'left' 
+  },
+
+  p: {
+    color: '#1890ff' 
+  }
 };
 
 export default App;
