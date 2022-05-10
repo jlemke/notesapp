@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "serviceConfiguration": {
+    "apiName": "notesapi",
+    "serviceName": "AppSync",
+    "gqlSchemaPath": "C:\\Users\\serik\\OneDrive\\Documents\\GitHub\\jlemke\\notesapp\\amplify\\backend\\api\\notesapi\\schema.graphql",
+    "defaultAuthType": {
+      "mode": "API_KEY",
+      "expirationTime": 365,
+      "apiKeyExpirationDate": "2023-05-10T20:37:13.843Z",
+      "keyDescription": "public"
+    }
+  }
+}
