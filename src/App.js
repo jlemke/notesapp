@@ -19,7 +19,11 @@ import {
   deleteNote as DeleteNote,
   updateNote as UpdateNote
 } from './graphql/mutations';
-import { onCreateNote } from './graphql/subscriptions';
+import { 
+  onCreateNote,
+  onDeleteNote,
+  onUpdateNote
+} from './graphql/subscriptions';
 
 
 
@@ -52,6 +56,18 @@ const reducer = (state, action) => {
           action.note, 
           ...state.notes
         ]
+      };
+
+    case 'DELETE_NOTE':
+      return {
+        ...state,
+        notes: state.notes.filter(n => n.id !== action.note.id)
+      };
+
+    case 'UPDATE_NOTE':
+      return {
+        ...state,
+        notes: state.notes.map(n => n.id === action.note.id ? action.note : n)
       };
 
     case 'RESET_FORM':
@@ -94,6 +110,8 @@ const App = () => {
       const notesData = await API.graphql({
         query: listNotes
       });
+
+      console.log('Fetched ' + notesData.data.listNotes.items.length + ' notes from server.');
 
       dispatch({ 
         type: 'SET_NOTES',
@@ -151,10 +169,9 @@ const App = () => {
 
   const deleteNote = async (noteToDelete) => {
 
-    // Filter state.notes, toss the note that === noteToDelete
     dispatch({ 
-      type: 'SET_NOTES', 
-      notes: state.notes.filter(note => note !== noteToDelete)
+      type: 'DELETE_NOTE', 
+      note: noteToDelete
     });
 
     // Tell the api to delete the note with given ID
@@ -179,13 +196,13 @@ const App = () => {
 
     // Update the state and display optimistically
     dispatch({
-      type: 'SET_NOTES',
-      notes: state.notes.map(note => {
-        if (note === noteToUpdate) 
-          note.completed = !note.completed;
-        return note;
-      })
+      type: 'UPDATE_NOTE',
+      note: { 
+        ...noteToUpdate,
+        completed : !noteToUpdate.completed
+      }
     });
+
 
     // Call api to update note
     try {
@@ -194,7 +211,7 @@ const App = () => {
         variables: {
           input: { 
             id: noteToUpdate.id,
-            completed: noteToUpdate.completed
+            completed: !noteToUpdate.completed
           }
         }
       });
@@ -214,7 +231,67 @@ const App = () => {
     });
   };
 
-  
+
+  useEffect(
+    () => {
+      fetchNotes();
+
+      const onCreateSubscription = API.graphql({
+        query: onCreateNote
+      }).subscribe({
+        next: noteData => {
+          const note = noteData.value.data.onCreateNote;
+
+          if (CLIENT_ID === note.clientId) return;
+
+          console.log('A new note was created by another client.');
+          dispatch({ type: 'ADD_NOTE', note});
+        }
+      });
+
+
+      const onDeleteSubscription = API.graphql({
+        query: onDeleteNote
+      }).subscribe({
+        next: noteData => {
+          console.log('Note deleted by a client.');
+          const note = noteData.value.data.onDeleteNote;
+          console.log('Note id: ' + note.id);
+
+          dispatch({ 
+            type: 'DELETE_NOTE', 
+            note: note
+          });
+        }
+      });
+
+
+      const onUpdateSubscription = API.graphql({
+        query: onUpdateNote
+      }).subscribe({
+        next: noteData => {
+          console.log('Note updated by a client.');
+          const note = noteData.value.data.onUpdateNote;
+          console.log('Note id: ' + note.id);
+
+          dispatch({
+            type: 'UPDATE_NOTE',
+            note: note
+          });
+        }
+      });
+
+      // Return a cleanup function
+      return () => {
+        onCreateSubscription.unsubscribe();
+        onDeleteSubscription.unsubscribe();
+        onUpdateSubscription.unsubscribe();
+      }
+    }, []
+  );
+
+
+
   const renderItem = (item) => {
     return (
       <List.Item 
@@ -249,29 +326,6 @@ const App = () => {
       </List.Item>
     )
   };
-
-
-  useEffect(
-    () => {
-      fetchNotes();
-
-      const subscription = API.graphql({
-        query: onCreateNote
-      }).subscribe({
-        next: noteData => {
-          const note = noteData.value.data.onCreateNote;
-
-          if (CLIENT_ID === note.clientId) return;
-
-          console.log('A new note was created by another client.');
-          dispatch({ type: 'ADD_NOTE', note});
-        }
-      });
-
-      // Return a cleanup function to useEffect()
-      return () => subscription.unsubscribe();
-    }, []
-  );
 
   return (
     <div style={styles.container}>
