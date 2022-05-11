@@ -319,9 +319,9 @@ const App = () => {
           <>
             {item.name}
             {item.completed && 
-              <span style={styles.completed}>
+              <div style={styles.completed}>
                 <CheckOutlined /> Complete
-              </span>
+              </div>
             }
           </>}
           description={item.description}
@@ -389,6 +389,7 @@ const styles = {
   },
 
   completed: {
+    display: 'inline-block',
     padding: 10,
     color: '#15E324'
   }

@@ -27,16 +27,16 @@ export const InfoBar = ({notes}) => {
 
 const styles = {
     container: {
-        display: "flex",
-        justifyContent: "center",
-        width: "100%"
+        display: 'flex',
+        justifyContent: 'center',
+        width: '100%'
     },
     infobar: {
         marginRight: 10,
         marginBottom: 0
     },
     checkMark: {
-        color: "#00ffff",
+        color: '#00ffff',
         width: 0
     }
 };
