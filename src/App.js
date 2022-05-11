@@ -146,25 +146,22 @@ const App = () => {
     
   };
 
-  const deleteNote = async ({ id }) => {
+  const deleteNote = async (noteToDelete) => {
 
-    const index = state.notes.findIndex(n => n.id === id);
-
-    const notes = [
-      ...state.notes.slice(0, index),
-      ...state.notes.slice(index + 1)
-    ];
-
+    // Filter state.notes, toss the note that === noteToDelete
     dispatch({ 
       type: 'SET_NOTES', 
-      notes 
+      notes: state.notes.filter(note => note !== noteToDelete)
     });
 
+    // Tell the api to delete the note with given ID
     try {
       await API.graphql({
         query: DeleteNote,
         variables: { 
-          input: { id } 
+          input: { 
+            id: noteToDelete.id
+          } 
         }
       });
 
@@ -183,9 +180,19 @@ const App = () => {
     });
   };
 
+  
   const renderItem = (item) => {
     return (
-      <List.Item style={styles.item}>
+      <List.Item 
+        style={styles.item}
+        actions={[
+          <a style={styles.a} 
+            onClick={() => deleteNote(item)}
+          >
+            Delete
+          </a>
+        ]}
+      >
         <List.Item.Meta
           title={item.name}
           description={item.description}
