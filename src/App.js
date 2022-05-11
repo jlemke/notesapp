@@ -9,7 +9,7 @@ import React, {
 import { API } from 'aws-amplify';
 
 import { List, Input, Button } from 'antd';
-import { CheckOutlined } from '@ant-design/icons';
+import { CheckOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import 'antd/dist/antd.css';
 
 import { v4 as uuid } from 'uuid';
@@ -237,6 +237,19 @@ const App = () => {
     });
   };
 
+  const addExclamation = (note) => {
+    dispatch({
+      type: "UPDATE_NOTE",
+      note: {
+        ...note,
+        name: note.name + "!"
+      }
+    });
+
+    // And then we DON'T send to the API
+  };
+
+
 
   useEffect(
     () => {
@@ -312,6 +325,11 @@ const App = () => {
             onClick={() => updateNote(item)}
           >
             {item.completed ? 'Unmark' : 'Mark Complete'}
+          </a>,
+          <a style={styles.addExclamation}
+            onClick={() => addExclamation(item)}
+          >
+            Add <ExclamationCircleOutlined />
           </a>
         ]}
       >
