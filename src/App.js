@@ -1,4 +1,5 @@
 import './App.css';
+import { InfoBar } from './InfoBar';
 
 import React, { 
   useEffect, 
@@ -296,7 +297,7 @@ const App = () => {
   );
 
 
-
+  // List generating JSX
   const renderItem = (item) => {
     return (
       <List.Item 
@@ -332,8 +333,12 @@ const App = () => {
     )
   };
 
+
+
+  // Main JSX
   return (
     <div style={styles.container}>
+      <InfoBar notes={state.notes} />
       <Input
         onChange={onChange}
         value={state.form.name}
