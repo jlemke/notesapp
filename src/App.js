@@ -267,6 +267,8 @@ const App = () => {
           dispatch({ type: 'ADD_NOTE', note});
         }
       });
+
+      // Return a cleanup function to useEffect()
       return () => subscription.unsubscribe();
     }, []
   );
