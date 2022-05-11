@@ -39,6 +39,7 @@ const initialState = {
   }
 };
 
+
 const reducer = (state, action) => {
   switch(action.type) {
 
@@ -111,11 +112,15 @@ const App = () => {
         query: listNotes
       });
 
-      console.log('Fetched ' + notesData.data.listNotes.items.length + ' notes from server.');
+      let notes = notesData.data.listNotes.items;
+      console.log('Fetched ' + notes.length + ' notes from server.');
 
+      // Sort notes by date descending
       dispatch({ 
         type: 'SET_NOTES',
-        notes: notesData.data.listNotes.items
+        notes: notes.sort((a, b) => 
+          Date.parse(a.createdAt) < Date.parse(b.createdAt) ? 1 : -1
+        )
       });
     }
     catch (err) {
