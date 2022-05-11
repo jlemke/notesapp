@@ -7,7 +7,8 @@ import React, {
 
 import { API } from 'aws-amplify';
 
-import { List, Input, Button } from 'antd'
+import { List, Input, Button } from 'antd';
+import { CheckOutlined } from '@ant-design/icons';
 import 'antd/dist/antd.css';
 
 import { v4 as uuid } from 'uuid';
@@ -226,14 +227,24 @@ const App = () => {
           <a style={styles.a}
             onClick={() => updateNote(item)}
           >
-            {item.completed ? 'Mark Incomplete' : 'Mark Complete'}
+            {item.completed ? 'Unmark' : 'Mark Complete'}
           </a>
         ]}
       >
+        
         <List.Item.Meta
-          title={`${item.name} ${item.completed ? 'Done' : 'Incomplete'}`}
+          title={
+          <>
+            {item.name}
+            {item.completed && 
+              <span style={styles.completed}>
+                <CheckOutlined /> Complete
+              </span>
+            }
+          </>}
           description={item.description}
         />
+        
       </List.Item>
     )
   };
@@ -292,6 +303,11 @@ const styles = {
 
   p: {
     color: '#1890ff' 
+  },
+
+  completed: {
+    padding: 10,
+    color: '#15E324'
   }
 };
 
