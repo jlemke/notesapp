@@ -28,7 +28,8 @@ import {
 
 
 
-const CLIENT_ID = uuid()
+const CLIENT_ID = uuid();
+const MAX_NOTES = 25;
 
 const initialState = {
   notes: [],
@@ -139,7 +140,12 @@ const App = () => {
 
     // Simple validation
     if (!form.name || !form.description) {
-       return alert('please enter a name and description');
+      return alert('please enter a name and description');
+    }
+
+    // Prevent too many notes being added to database.
+    if (state.notes.length >= MAX_NOTES) {
+      return alert('Max number of notes reached: ' + MAX_NOTES);
     }
 
     const note = { 
@@ -353,10 +359,13 @@ const App = () => {
       />
       <Button
         onClick={createNote}
+        disabled={state.notes.length >= MAX_NOTES}
         type="primary"
       >
         Create Note
       </Button>
+      {state.notes.length >= MAX_NOTES && 
+        <div style={styles.maxNotes}>Maximum number of notes reached. ({MAX_NOTES})</div>}
       <List
         loading={state.loading}
         dataSource={state.notes}
@@ -387,11 +396,14 @@ const styles = {
   delete: {
     color: '#ff0000'
   },
-
   completed: {
     display: 'inline-block',
-    padding: 10,
+    paddingLeft: 10,
     color: '#15E324'
+  },
+  maxNotes: {
+    display: "inline-block",
+    paddingLeft: 16
   }
 };
 
