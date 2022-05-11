@@ -150,11 +150,6 @@ const App = () => {
     };
 
     dispatch({ 
-      type: 'ADD_NOTE',
-      note
-    });
-    
-    dispatch({ 
       type: 'RESET_FORM'
     });
 
@@ -175,11 +170,6 @@ const App = () => {
 
   const deleteNote = async (noteToDelete) => {
 
-    dispatch({ 
-      type: 'DELETE_NOTE', 
-      note: noteToDelete
-    });
-
     // Tell the api to delete the note with given ID
     try {
       await API.graphql({
@@ -199,16 +189,6 @@ const App = () => {
   };
 
   const updateNote = async (noteToUpdate) => {
-
-    // Update the state and display optimistically
-    dispatch({
-      type: 'UPDATE_NOTE',
-      note: { 
-        ...noteToUpdate,
-        completed : !noteToUpdate.completed
-      }
-    });
-
 
     // Call api to update note
     try {
@@ -261,9 +241,9 @@ const App = () => {
         next: noteData => {
           const note = noteData.value.data.onCreateNote;
 
-          if (CLIENT_ID === note.clientId) return;
+          //if (CLIENT_ID === note.clientId) return;
 
-          console.log('A new note was created by another client.');
+          console.log('A new note was created by a client.');
           dispatch({ type: 'ADD_NOTE', note});
         }
       });
@@ -273,9 +253,9 @@ const App = () => {
         query: onDeleteNote
       }).subscribe({
         next: noteData => {
-          console.log('Note deleted by a client.');
+
           const note = noteData.value.data.onDeleteNote;
-          console.log('Note id: ' + note.id);
+          console.log('Note deleted by a client; note id: ' + note.id);
 
           dispatch({ 
             type: 'DELETE_NOTE', 
@@ -289,9 +269,9 @@ const App = () => {
         query: onUpdateNote
       }).subscribe({
         next: noteData => {
-          console.log('Note updated by a client.');
+
           const note = noteData.value.data.onUpdateNote;
-          console.log('Note id: ' + note.id);
+          console.log('Note updated by a client; note id: ' + note.id);
 
           dispatch({
             type: 'UPDATE_NOTE',
