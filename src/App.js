@@ -19,6 +19,7 @@ import {
   deleteNote as DeleteNote,
   updateNote as UpdateNote
 } from './graphql/mutations';
+import { onCreateNote } from './graphql/subscriptions';
 
 
 
@@ -198,7 +199,7 @@ const App = () => {
         }
       });
 
-      console.log("successfully updated note.");
+      console.log('successfully updated note.');
     }
     catch (err) {
       console.error({ err });
@@ -219,7 +220,7 @@ const App = () => {
       <List.Item 
         style={styles.item}
         actions={[
-          <a style={styles.a} 
+          <a style={styles.delete} 
             onClick={() => deleteNote(item)}
           >
             Delete
@@ -253,6 +254,20 @@ const App = () => {
   useEffect(
     () => {
       fetchNotes();
+
+      const subscription = API.graphql({
+        query: onCreateNote
+      }).subscribe({
+        next: noteData => {
+          const note = noteData.value.data.onCreateNote;
+
+          if (CLIENT_ID === note.clientId) return;
+
+          console.log('A new note was created by another client.');
+          dispatch({ type: 'ADD_NOTE', note});
+        }
+      });
+      return () => subscription.unsubscribe();
     }, []
   );
 
@@ -303,6 +318,10 @@ const styles = {
 
   p: {
     color: '#1890ff' 
+  },
+
+  delete: {
+    color: '#ff0000'
   },
 
   completed: {
